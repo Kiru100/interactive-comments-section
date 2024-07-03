@@ -1,9 +1,9 @@
-import { Image } from 'expo-image';
-import { Button, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Comment } from '@/components/Comment';
 import { Rubik_400Regular, Rubik_500Medium, useFonts } from '@expo-google-fonts/rubik';
-
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+import { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
+import { comments } from "../../assets/JSON/comments_dummy_data";
 
 export default function App() {
 	const [fontsLoaded] = useFonts({
@@ -12,40 +12,41 @@ export default function App() {
 	});
 
 	if (!fontsLoaded) {
-	return null;
+		return null;
 	}
+
+	const [is_text_input_focused, setTextInputFocused] = useState(false);
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.comment}>
-				<View style={styles.comment_details}>
+			<FlatList
+				ItemSeparatorComponent={() => <View style={{height: 16}} />}
+				data={comments}
+				renderItem={({item}) => <Comment data={item}/>}
+				keyExtractor={comments => comments.comment_id}
+			/>
+			<View style={styles.add_comment_container}>
+				<View
+					style={styles.add_comment_input_container}>
+					<TextInput
+						style={styles.add_comment_input}
+						multiline={true}
+						numberOfLines={1}
+						placeholder="Add a comment..."
+						// textAlignVertical={is_text_input_focused ? "top" : "center"}
+					/> 
+				</View>
+
+				<View style={styles.add_comment_actions}>
 					<Image
 						style={styles.image}
-						source="https://picsum.photos/seed/696/3000/2000"
-						placeholder={{ blurhash }}
 						contentFit="cover"
 						transition={1000}
+						source="https://i.pravatar.cc/150?img=11"
 					/>
-					<Text style={styles.user_name}>
-						amyrobson
-					</Text>
-					<Text style={styles.comment_date}>
-						1 month ago
-					</Text>
-				</View>
-				<Text  style={styles.comment_content}>
-					Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You’ve nailed the design and the responsiveness at various breakpoints works really well.
-				</Text>
-				<View style={styles.comment_actions}>
-					<View style={styles.up_down_vote_container}>
-						<TouchableOpacity>
-							<Text>+</Text>
-						</TouchableOpacity>
-						<Text style={styles.up_down_vote_count}>1</Text>
-						<TouchableOpacity>
-							<Text>-</Text>
-						</TouchableOpacity>
-					</View>
+					<TouchableOpacity style={styles.add_comment_button}>
+                        <Text style={styles.add_comment_button_label}>Send</Text>
+                    </TouchableOpacity>
 				</View>
 			</View>
 		</View>
@@ -59,16 +60,11 @@ const styles = StyleSheet.create({
 		paddingTop: 48,
 		backgroundColor: '#F5F6FA',
 	},
-	comment_date:{
-		color: "#67727E", 
-		fontSize: 16,
-		lineHeight: 24,
-		fontFamily:"Rubik_400Regular"
-	},
-	user_name:{
-		color: "#334253",
-		fontSize: 16,
-		fontFamily:"Rubik_500Medium"
+	add_comment_container:{
+		backgroundColor: "#fff",
+		marginTop: 16,
+		padding: 16,
+		borderRadius: 8
 	},
 	image: {
 		borderRadius: 50,
@@ -76,41 +72,39 @@ const styles = StyleSheet.create({
 		width: 32,
 		backgroundColor: '#0553',
 	},
-	comment:{
-		width: '100%',
-		backgroundColor: "#fff",
-		padding: 16,
-		borderRadius: 8
+	add_comment_actions:{
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		paddingTop: 16
 	},
-	comment_details:{
-		width: '100%',
-		gap: 16,
-		flexDirection:"row",
-		alignItems:"center"
+	add_comment_button:{
+		backgroundColor: "#5357B6",
+		borderRadius: 8,
+		width: 104,
+		height: 48,
+		justifyContent: "center",
+		alignItems: "center"
 	},
-	comment_content:{
-		marginTop: 16,
+	add_comment_button_label:{
+		fontSize: 16,
+		fontFamily:"Rubik_500Medium",
+		color: "#fff"
+	},
+	add_comment_input:{
+		fontFamily:"Rubik_400Regular",
 		fontSize: 16,
 		lineHeight: 24,
-		color: "#67727E",
-		fontFamily:"Rubik_400Regular"
+		color: "#67727E"
 	},
-	comment_actions:{
-
-	},
-	up_down_vote_container: {
-		flexDirection:"row",
-		marginTop: 16,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		backgroundColor: "#F5F6FA",
-		width: "auto"
-	},
-	up_down_vote_count:{
-		fontFamily:"Rubik_500Medium",
-		fontSize: 16,
-		width: 30,
-		textAlign: "center"
+	add_comment_input_container:{
+		borderColor: '#E9EBF0',
+		borderWidth: 1,
+		borderRadius: 8,
+		paddingHorizontal: 24,
+		paddingVertical: 12
+		
+		
 	}
 	
 });
