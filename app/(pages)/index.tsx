@@ -1,21 +1,27 @@
 import { Comment } from '@/components/Comment';
-import { Rubik_400Regular, Rubik_500Medium, useFonts } from '@expo-google-fonts/rubik';
-import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import commentStore from '@/stores/comments';
+import userStore from '@/stores/user';
+
 import { Image } from 'expo-image';
-import { comments } from "../../assets/JSON/comments_dummy_data";
+import { useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 
 export default function App() {
-	const [fontsLoaded] = useFonts({
-		Rubik_400Regular,
-		Rubik_500Medium
-	});
+	const comments = commentStore((store) => store.comments);
+	const addComment = commentStore((store) => store.addComment);
+	const current_user = userStore((store) => store.current_user);
 
-	if (!fontsLoaded) {
-		return null;
+	const [focus_text_input, setFocusTextInput] = useState(false);
+	const [focus_text_input_value, setFocusTextInputValue] = useState("");
+
+	const onPressSendButton = () =>{
+		if(focus_text_input_value.length){
+			addComment(focus_text_input_value, current_user);
+			setFocusTextInputValue("");
+			setFocusTextInput(false);
+		}
 	}
-
-	const [is_text_input_focused, setTextInputFocused] = useState(false);
 
 	return (
 		<View style={styles.container}>
@@ -31,9 +37,13 @@ export default function App() {
 					<TextInput
 						style={styles.add_comment_input}
 						multiline={true}
-						numberOfLines={1}
+						numberOfLines={focus_text_input ? 4 : 1}
 						placeholder="Add a comment..."
-						// textAlignVertical={is_text_input_focused ? "top" : "center"}
+						textAlignVertical={ focus_text_input ? "top" : "center"}
+						value={focus_text_input_value}
+						onChangeText={text => setFocusTextInputValue(text)}
+						onFocus={()=>setFocusTextInput(true)}
+						onBlur={()=>setFocusTextInput(false)}
 					/> 
 				</View>
 
@@ -42,9 +52,9 @@ export default function App() {
 						style={styles.image}
 						contentFit="cover"
 						transition={1000}
-						source="https://i.pravatar.cc/150?img=11"
+						source={current_user.avatar_url}
 					/>
-					<TouchableOpacity style={styles.add_comment_button}>
+					<TouchableOpacity style={styles.add_comment_button} onPress={onPressSendButton}>
                         <Text style={styles.add_comment_button_label}>Send</Text>
                     </TouchableOpacity>
 				</View>
