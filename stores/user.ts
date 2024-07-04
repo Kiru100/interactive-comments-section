@@ -12,9 +12,9 @@ export interface CurrentUser{
 
 const userStore = create<User>((set) => ({
     current_user: {
-        user_id: "user5",
-        username: "john_doe",
-        avatar_url: "https://i.pravatar.cc/150?img=3"
+        user_id: "user9",
+        username: "george_harris",
+        avatar_url: "https://i.pravatar.cc/150?img=7"
     }
 }));
 

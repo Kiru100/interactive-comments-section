@@ -16,7 +16,7 @@ export default function App() {
 	const [focus_text_input_value, setFocusTextInputValue] = useState("");
 
 	const onPressSendButton = () =>{
-		if(focus_text_input_value.length){
+		if(focus_text_input_value?.length){
 			addComment(focus_text_input_value, current_user);
 			setFocusTextInputValue("");
 			setFocusTextInput(false);
