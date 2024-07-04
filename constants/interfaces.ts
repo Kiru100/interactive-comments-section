@@ -7,8 +7,8 @@ interface UserProfile {
 interface Reply {
     reply_id: string;
     content: string;
-    upvotes: number;
-    downvotes: number;
+    upvotes: string[];
+    downvotes: string[];
     user_profile: UserProfile;
     date: string;
 }
@@ -16,7 +16,8 @@ interface Reply {
 export interface CommentInterface {
     comment_id: string;
     content: string;
-    upvotes: number;
+    upvotes?: string[];
+    downvotes?: string[];
     replies: Reply[];
     user_profile: UserProfile;
     date: string;

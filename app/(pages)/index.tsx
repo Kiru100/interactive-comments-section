@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 		height: 32,
 		width: 32,
-		backgroundColor: '#0553',
 	},
 	add_comment_actions:{
 		flexDirection: "row",
