@@ -1,132 +1,77 @@
 import { CommentInterface } from '@/constants/interfaces';
+import { StyleSheet, View } from 'react-native';
+import { Message } from '../Message';
+
 import commentStore from '@/stores/comments';
-import userStore from '@/stores/user';
-import { Image } from 'expo-image';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { CurrentUser } from '@/stores/user';
 
-import Modal from "react-native-modal";
-
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
-export const Comment = ({data: {content, upvotes, downvotes, user_profile, date, comment_id}} : {data: CommentInterface}) => {
-	const current_user = userStore((store) => store.current_user);
+export const Comment = ({data} : {data: CommentInterface}) => {
 	const upComment = commentStore((store) => store.upComment);
 	const downComment = commentStore((store) => store.downComment);
 	const deleteComment = commentStore((store) => store.deleteComment);
+	const updateComment = commentStore((store) => store.updateComment);
 
+	const upReply = commentStore((store) => store.upReply);
+	const downReply = commentStore((store) => store.downReply);
+	const updateReply = commentStore((store) => store.updateReply);
+	const deleteReply = commentStore((store) => store.deleteReply);
 
-	const is_own_comment = (user_profile.user_id === current_user.user_id)
-
-	const [isModalVisible, setModalVisible] = useState(false);
-
-    const formatDate = (date: string) => {
-        return moment(date).fromNow();
-    };
-
+	const addReply = commentStore((store) => store.addReply);
 
     return (
-        <View style={styles.comment}>
-            <View style={styles.comment_details}>
-                <Image
-                    style={styles.image}
-                    source={user_profile.avatar_url}
-                    placeholder={{ blurhash }}
-                    contentFit="cover"
-                    transition={1000}
-                />
-                <Text style={styles.user_name} >
-                    {user_profile.username}
-                </Text>
-				{is_own_comment ? <Text style={styles.self_indication}>you</Text> : ""} 
-                <Text style={styles.comment_date} ellipsizeMode="tail" numberOfLines={1}>
-                    {formatDate(date)}
-                </Text>
-            </View>
-            <Text  style={styles.comment_content}>
-                {content}
-            </Text>
-            <View style={styles.comment_actions}>
-                <View style={styles.up_down_vote_container}>
-                    <TouchableOpacity onPress={()=>upComment(comment_id, current_user.user_id)}>			
-						<Image 
-							style={styles.up_vote_icon}
-							contentFit="cover"
-							source={ upvotes?.includes(current_user.user_id) ? require("../../assets/images/+_active.png") :  require("../../assets/images/+.png") } 
-						/>
-								
-                    </TouchableOpacity>
-                    <Text style={styles.up_down_vote_count}>{((upvotes?.length || 0) - (downvotes?.length || 0) )}</Text>
-                    <TouchableOpacity onPress={()=>downComment(comment_id, current_user.user_id)}>
-                        <Image 
-                            style={styles.down_vote_icon}
-                            contentFit="cover"
-                            source={downvotes?.includes(current_user.user_id) ? require("../../assets/images/-_active.png") : require("../../assets/images/-.png")  }
-                        />
-                    </TouchableOpacity>
-                </View>
-				{is_own_comment ? 
-					(
-						<View style={styles.crud_action}>
-							<TouchableOpacity style={styles.reply_button} onPress={()=>setModalVisible(true)}>
-								<Image 
-									style={[styles.reply_icon, styles.delete_icon]}
-									contentFit="cover"
-									source={require("../../assets/images/delete_icon.png")}
-								/>
-								<Text style={[styles.reply_label, styles.delete_label]}>Delete</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={styles.reply_button}>
-								<Image 
-									style={[styles.reply_icon, styles.edit_icon]}
-									contentFit="cover"
-									source={require("../../assets/images/edit_icon.png")}
-								/>
-								<Text style={styles.reply_label}>Edit</Text>
-							</TouchableOpacity>							
+		<>
+			<Message 
+				data={data}
+				onPressUpMessage={(message_id: string, current_user_id: string)=>upComment(message_id, current_user_id)}
+				onPressUpdateButton={(message_id: string, new_comment: string)=>updateComment(message_id, new_comment)}
+				onPressDownMessage={(message_id: string, current_user_id: string)=>downComment(message_id, current_user_id)}
+				onPressDeleteMessage={(message_id: string)=>deleteComment(message_id)}
+				onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(message_id, reply_value, current_user )}
+			/>	
+			{ 
+				data?.replies?.length ? 
+				(
+					<View style={styles.reply_container}>
+						<View style={styles.vertical_reply_line}></View>
+						<View style={styles.reply_list}>
+							{
+								data?.replies?.map((reply)=>
+									(
+										
+										<Message 
+											data={reply}
+											key={`reply_${reply.id}`}
+											onPressUpMessage={(message_id: string, current_user_id: string)=>upReply(data.id, message_id, current_user_id)}
+											onPressDownMessage={(message_id: string, current_user_id: string)=>downReply(data.id, message_id, current_user_id)}
+											onPressUpdateButton={(message_id: string, new_message: string)=>updateReply(data.id, message_id, new_message)}
+											onPressDeleteMessage={(message_id: string)=>deleteReply(data.id, message_id)}
+											onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(message_id, reply_value, current_user )}
+										/>							
+									)
+								)
+							}
 						</View>
-					)			
-					:
-					(
-						<TouchableOpacity style={styles.reply_button}>
-							<Image 
-								style={styles.reply_icon}
-								contentFit="cover"
-								source={require("../../assets/images/reply.png")}
-							/>
-							<Text style={styles.reply_label}>Reply</Text>
-						</TouchableOpacity>
-					)			
-				}   
-            </View>
-
-			<Modal 
-				isVisible={isModalVisible} 
-				hideModalContentWhileAnimating={true} 
-				animationIn="zoomIn"
-				animationOut="zoomOut"
-				backdropTransitionOutTiming={350}
-			>
-				<View style={styles.modal_content}>
-					<Text style={styles.modal_title}>Delete comment</Text>
-					<Text style={styles.modal_message}>Are you sure you want to delete this comment? This will remove the comment and can’t be undone.</Text>
-					<View style={styles.modal_actions_container}>
-						<TouchableOpacity onPress={()=>setModalVisible(false)} style={styles.modal_cancel_button}>
-							<Text style={styles.modal_button_label}>NO, CANCEL</Text>
-						</TouchableOpacity>
-						<TouchableOpacity onPress={()=>{setModalVisible(false);  deleteComment(comment_id);}} style={styles.modal_accept_button}>
-							<Text  style={styles.modal_button_label}>YES, DELETE</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</Modal>
-        </View>
+				</View>	
+				) : ""
+				
+			}
+		</>
     )
 }
 
 const styles = StyleSheet.create({
+	flex:{
+		display: "flex"
+	},
+	hidden:{
+		display: "none"
+	},
+	reply_list:{
+		flexDirection: "column",
+		gap: 16,
+		flex: 1
+	},
 	comment_date:{
 		color: "#67727E", 
 		fontSize: 16,
@@ -139,7 +84,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontFamily:"Rubik_500Medium",
 		overflow: "hidden",
-		// flex: 1
 	},
 	image: {
 		borderRadius: 50,
@@ -281,4 +225,44 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 
+
+	editing_container:{
+		marginTop: 16
+	},
+	text_input_container:{
+		borderColor: "#E9EBF0",
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 12
+	},
+	edit_text_input:{
+		fontSize: 16,
+		lineHeight: 24,
+		color: "#67727E",
+		fontFamily:"Rubik_400Regular"
+	},
+	cancel_edit_button:{
+		fontSize: 16,
+		lineHeight: 24,
+		color: "#67727E",
+		fontFamily:"Rubik_400Regular"
+	},
+	editing_comment_actions:{
+		flexDirection: "row",
+		marginTop: 16,
+		justifyContent: "flex-end",
+		alignItems: "center",
+		gap: 8,
+	},
+	vertical_reply_line:{
+		width: 2,
+		backgroundColor: "#E9EBF0",
+		height: "100%"
+	},
+	reply_container:{
+		flexDirection: "row",
+		gap: 16,
+		marginTop: 16,
+	}
+	
 });

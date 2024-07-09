@@ -1,10 +1,11 @@
+import { Button } from '@/components/Button';
 import { Comment } from '@/components/Comment';
 import commentStore from '@/stores/comments';
 import userStore from '@/stores/user';
 
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 
 
 export default function App() {
@@ -29,7 +30,7 @@ export default function App() {
 				ItemSeparatorComponent={() => <View style={{height: 16}} />}
 				data={comments}
 				renderItem={({item}) => <Comment data={item}/>}
-				keyExtractor={comments => comments.comment_id}
+				keyExtractor={comments => comments.id}
 			/>
 			<View style={styles.add_comment_container}>
 				<View
@@ -46,7 +47,6 @@ export default function App() {
 						onBlur={()=>setFocusTextInput(false)}
 					/> 
 				</View>
-
 				<View style={styles.add_comment_actions}>
 					<Image
 						style={styles.image}
@@ -54,9 +54,7 @@ export default function App() {
 						transition={1000}
 						source={current_user.avatar_url}
 					/>
-					<TouchableOpacity style={styles.add_comment_button} onPress={onPressSendButton}>
-                        <Text style={styles.add_comment_button_label}>Send</Text>
-                    </TouchableOpacity>
+					<Button button_text="Send" onPressButton={onPressSendButton} />
 				</View>
 			</View>
 		</View>
@@ -111,9 +109,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 8,
 		paddingHorizontal: 24,
-		paddingVertical: 12
-		
-		
+		paddingVertical: 12	
 	}
 	
 });
