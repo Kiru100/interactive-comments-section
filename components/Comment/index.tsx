@@ -27,7 +27,7 @@ export const Comment = ({data} : {data: CommentInterface}) => {
 				onPressUpdateButton={(message_id: string, new_comment: string)=>updateComment(message_id, new_comment)}
 				onPressDownMessage={(message_id: string, current_user_id: string)=>downComment(message_id, current_user_id)}
 				onPressDeleteMessage={(message_id: string)=>deleteComment(message_id)}
-				onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(message_id, reply_value, current_user )}
+				onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(data.id, reply_value, current_user )}
 			/>	
 			{ 
 				data?.replies?.length ? 
@@ -46,7 +46,7 @@ export const Comment = ({data} : {data: CommentInterface}) => {
 											onPressDownMessage={(message_id: string, current_user_id: string)=>downReply(data.id, message_id, current_user_id)}
 											onPressUpdateButton={(message_id: string, new_message: string)=>updateReply(data.id, message_id, new_message)}
 											onPressDeleteMessage={(message_id: string)=>deleteReply(data.id, message_id)}
-											onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(message_id, reply_value, current_user )}
+											onReply={(message_id: string, reply_value: string, current_user: CurrentUser)=>addReply(data.id, reply_value, current_user )}
 										/>							
 									)
 								)
