@@ -31,6 +31,7 @@ export default function App() {
 				data={comments}
 				renderItem={({item}) => <Comment data={item}/>}
 				keyExtractor={comments => comments.id}
+				keyboardShouldPersistTaps="always"
 			/>
 			<View style={styles.add_comment_container}>
 				<View
