@@ -1,4 +1,4 @@
-![Project Screenshot](assets/Mobile.png)
+![Project Screenshot](assets/images/Mobile.png)
 
 # Interactive Comments Section
 
